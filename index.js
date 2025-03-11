@@ -22,7 +22,7 @@ bot.on('error', (err) => console.log(`❌ Error: `, err));
 
 function keepAlive() {
   setInterval(() => {
-    bot.chat('I am still alive!');
+    bot.chat('NJAN BARROZ!!EE SERVER KAKUNNE BHOOTHAM!!');
   }, 300000); // Every 5 minutes
 }
 
