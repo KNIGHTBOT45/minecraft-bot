@@ -1,4 +1,7 @@
 const mineflayer = require('mineflayer');
+const express = require('express');
+const app = express();
+const port = 3000;
 
 const bot = mineflayer.createBot({
   host: 'MinecraftPrivate.aternos.me', // Replace with your server IP
@@ -22,7 +25,7 @@ bot.on('error', (err) => console.log(`❌ Error: `, err));
 
 function keepAlive() {
   setInterval(() => {
-    bot.chat('NJAN BARROZ!!EE SERVER KAKUNNE BHOOTHAM!!');
+    bot.chat('NJAN BARROZ!! EE SERVER KAKUNNE BHOOTHAM!!');
   }, 300000); // Every 5 minutes
 }
 
@@ -56,3 +59,12 @@ function startAntiBanActions() {
     }
   }, 20000); // Randomly dig blocks every 20 seconds
 }
+
+// ✅ FAKE EXPRESS SERVER (to keep Render awake)
+app.get('/', (req, res) => {
+  res.send('✅ Bot is running. NJAN BARROZ!!');
+});
+
+app.listen(port, () => {
+  console.log(`✅ Fake web server running on port ${port}`);
+});
