@@ -1,69 +1,58 @@
 const mineflayer = require('mineflayer');
-const keepAlive = require('./server');
-const { Vec3 } = require('vec3'); // ✅ Fix the crash
 
-let bot;
+const bot = mineflayer.createBot({
+  host: 'MinecraftPrivate.aternos.me', // Replace with your server IP
+  port: 49038, // Your server port (default is 25565)
+  username: '.Barroz', // Replace with your bot's username
+  version: '1.21.4' // Replace with your server version
+});
 
-function createBot() {
-  bot = mineflayer.createBot({
-    host: 'MinecraftPrivate.aternos.me', // Replace with your Aternos IP
-    port: 49038, // Default port
-    username: '.GodFather', // Your bot's name
-    version: '1.21.4' // Your Minecraft version
-  });
+bot.on('login', () => {
+  console.log('✅ Bot has joined the server!');
+  keepAlive();
+  startAntiBanActions();
+});
 
-  bot.on('spawn', () => {
-    console.log('✅ Bot has joined the server!');
-    bot.chat('I am here to keep the server online 24/7!');
+bot.on('kicked', (reason) => {
+  console.log(`❌ Bot was kicked: ${reason}`);
+  setTimeout(() => bot.connect(), 5000);
+});
 
-    // ✅ Move around randomly to prevent being kicked
-    setInterval(() => {
-      const x = bot.entity.position.x + (Math.random() * 10 - 5);
-      const z = bot.entity.position.z + (Math.random() * 10 - 5);
-      const position = new Vec3(x, bot.entity.position.y, z);
+bot.on('error', (err) => console.log(`❌ Error: `, err));
 
-      bot.setControlState('forward', true);
-      bot.lookAt(position); // ✅ Fix crash (using Vec3)
-    }, 10000); // Move every 10 seconds
-
-    // ✅ Chat randomly to prevent AFK kick
-    setInterval(() => {
-      const messages = [
-        'I am here to keep the server online!',
-        '24/7 server online thanks to me!',
-        'No shutdowns, no disconnections!',
-        'Minecraft 24/7 bot active!',
-        'Keeping the server alive 🔥!'
-      ];
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-      bot.chat(randomMessage);
-    }, 60000); // Chat every 1 minute
-  });
-
-  bot.on('kicked', (reason) => {
-    console.log('❌ Bot was kicked: ', reason);
-    console.log('🔁 Waiting for server to start...');
-    reconnect();
-  });
-
-  bot.on('error', (err) => {
-    console.log('❌ Error: ', err);
-    console.log('🔁 Waiting for server to start...');
-    reconnect();
-  });
-
-  bot.on('end', () => {
-    console.log('🔁 Bot disconnected. Waiting for server to start...');
-    reconnect();
-  });
-
-  function reconnect() {
-    setTimeout(() => {
-      console.log('🔁 Trying to reconnect to the server...');
-      createBot();
-    }, 60000); // ✅ Wait 1 minute before reconnecting
-  }
+function keepAlive() {
+  setInterval(() => {
+    bot.chat('I am still alive!');
+  }, 300000); // Every 5 minutes
 }
 
-keepAlive();
-createBot();
+function startAntiBanActions() {
+  setInterval(() => {
+    const randomYaw = Math.random() * Math.PI * 2;
+    const randomPitch = (Math.random() - 0.5) * Math.PI;
+    bot.look(randomYaw, randomPitch, true);
+  }, 5000); // Randomly look around every 5 seconds
+
+  setInterval(() => {
+    const hotbarSlot = Math.floor(Math.random() * 9);
+    bot.setQuickBarSlot(hotbarSlot);
+  }, 10000); // Randomly switch hotbar every 10 seconds
+
+  setInterval(() => {
+    const forward = Math.random() > 0.5;
+    const jump = Math.random() > 0.5;
+    bot.setControlState('forward', forward);
+    bot.setControlState('jump', jump);
+    setTimeout(() => {
+      bot.setControlState('forward', false);
+      bot.setControlState('jump', false);
+    }, 3000);
+  }, 15000); // Randomly walk/jump around every 15 seconds
+
+  setInterval(() => {
+    const block = bot.blockAt(bot.entity.position.offset(0, -1, 0));
+    if (block && Math.random() > 0.5) {
+      bot.dig(block);
+    }
+  }, 20000); // Randomly dig blocks every 20 seconds
+}
