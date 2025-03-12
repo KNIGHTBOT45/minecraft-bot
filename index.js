@@ -89,8 +89,12 @@ app.get('/', (req, res) => {
   res.send('✅ Bot is running. NJAN BARROZ!!');
 });
 
-app.listen(port, () => {
-  console.log(`✅ Fake web server running on port ${port}`);
+if (!module.parent) { // Prevent multiple instances
+  app.listen(port, () => {
+    console.log(`✅ Fake web server running on port ${port}`);
+  });
+}
+
 });
 
 // Start the bot for the first time
