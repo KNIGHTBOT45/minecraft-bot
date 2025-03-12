@@ -95,7 +95,5 @@ if (!module.parent) { // Prevent multiple instances
   });
 }
 
-});
-
 // Start the bot for the first time
 createBot();
